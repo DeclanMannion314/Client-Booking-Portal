@@ -1,0 +1,14 @@
+{
+    "name": "booking-app",
+    "version": "1.0.0",
+    "description": "",
+    "main": "server.js",
+    "scripts": {
+        "start": "node server.js"
+    },
+    "dependencies": {
+        "dotenv": "^18.0.4",
+        "express": "^4.18.2",
+        "nodemailer": "^6.9.7"
+    }
+}
