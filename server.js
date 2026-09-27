@@ -1,27 +1,26 @@
 require('dotenv').config();
 const express = require('express');
-const fs = require('fs');
 const path = require('path');
 const nodemailer = require('nodemailer');
+const { MongoClient } = require('mongodb');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const DATA_FILE = path.join(__dirname, 'jobs.json');
 
-// Simple password protecting the dashboard. Change this before you deploy it.
 const DASHBOARD_PASSWORD = process.env.DASHBOARD_PASSWORD || 'changeme';
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// --- Helpers to read/write jobs.json ---
-function readJobs() {
-  if (!fs.existsSync(DATA_FILE)) return [];
-  return JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
-}
+// --- MongoDB setup ---
+const client = new MongoClient(process.env.MONGODB_URI);
+let jobsCollection;
 
-function writeJobs(jobs) {
-  fs.writeFileSync(DATA_FILE, JSON.stringify(jobs, null, 2));
+async function connectDB() {
+  await client.connect();
+  const db = client.db('booking-app');
+  jobsCollection = db.collection('jobs');
+  console.log('Connected to MongoDB');
 }
 
 // --- Email setup ---
@@ -60,8 +59,7 @@ function sendJobEmail(job) {
 
 // --- Routes ---
 
-// Submit a new job (called from the booking form)
-app.post('/api/jobs', (req, res) => {
+app.post('/api/jobs', async (req, res) => {
   const { name, phone, jobType, address, size, preferredDate, notes } = req.body;
 
   if (!name || !phone || !jobType || !address || !preferredDate) {
@@ -82,16 +80,13 @@ app.post('/api/jobs', (req, res) => {
     createdAt: new Date().toISOString()
   };
 
-  const jobs = readJobs();
-  jobs.push(job);
-  writeJobs(jobs);
+  await jobsCollection.insertOne(job);
 
   sendJobEmail(job);
 
   res.status(201).json({ success: true, job });
 });
 
-// Simple password check middleware for dashboard routes
 function requireDashboardAuth(req, res, next) {
   const password = req.headers['x-dashboard-password'] || req.query.password;
   if (password !== DASHBOARD_PASSWORD) {
@@ -100,53 +95,55 @@ function requireDashboardAuth(req, res, next) {
   next();
 }
 
-// Get all jobs (dashboard)
-app.get('/api/jobs', requireDashboardAuth, (req, res) => {
-  res.json(readJobs());
+app.get('/api/jobs', requireDashboardAuth, async (req, res) => {
+  const jobs = await jobsCollection.find({}).project({ _id: 0 }).toArray();
+  res.json(jobs);
 });
 
-// Update a job's status and/or scheduled date (dashboard)
-app.patch('/api/jobs/:id', requireDashboardAuth, (req, res) => {
+app.patch('/api/jobs/:id', requireDashboardAuth, async (req, res) => {
   const { status, scheduledDate } = req.body;
   const validStatuses = ['new', 'contacted', 'scheduled', 'done'];
 
-  const jobs = readJobs();
-  const job = jobs.find((j) => j.id === req.params.id);
-
-  if (!job) {
-    return res.status(404).json({ error: 'Job not found.' });
-  }
+  const updates = {};
 
   if (status !== undefined) {
     if (!validStatuses.includes(status)) {
       return res.status(400).json({ error: 'Invalid status.' });
     }
-    job.status = status;
+    updates.status = status;
   }
 
   if (scheduledDate !== undefined) {
-    job.scheduledDate = scheduledDate;
+    updates.scheduledDate = scheduledDate;
   }
 
-  writeJobs(jobs);
-  res.json({ success: true, job });
-});
+  const result = await jobsCollection.findOneAndUpdate(
+    { id: req.params.id },
+    { $set: updates },
+    { returnDocument: 'after' }
+  );
 
-// Delete a job (dashboard)
-app.delete('/api/jobs/:id', requireDashboardAuth, (req, res) => {
-  const jobs = readJobs();
-  const index = jobs.findIndex((j) => j.id === req.params.id);
-
-  if (index === -1) {
+  if (!result) {
     return res.status(404).json({ error: 'Job not found.' });
   }
 
-  jobs.splice(index, 1);
-  writeJobs(jobs);
+  res.json({ success: true, job: result });
+});
+
+app.delete('/api/jobs/:id', requireDashboardAuth, async (req, res) => {
+  const result = await jobsCollection.deleteOne({ id: req.params.id });
+
+  if (result.deletedCount === 0) {
+    return res.status(404).json({ error: 'Job not found.' });
+  }
 
   res.json({ success: true });
 });
 
-app.listen(PORT, () => {
-  console.log(`Booking app running on http://localhost:${PORT}`);
+connectDB().then(() => {
+  app.listen(PORT, () => {
+    console.log(`Booking app running on http://localhost:${PORT}`);
+  });
+}).catch((err) => {
+  console.error('Failed to connect to MongoDB:', err);
 });
