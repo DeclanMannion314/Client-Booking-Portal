@@ -40,14 +40,16 @@ function sendJobEmail(job) {
   const mailOptions = {
     from: process.env.SMTP_USER || 'noreply@example.com',
     to: notifyEmail,
-    subject: `New job request: ${job.jobType} - ${job.name}`,
+    subject: `New job request: ${job.placeType} - ${job.name}`,
     text:
       `New job request submitted\n\n` +
       `Name: ${job.name}\n` +
       `Phone: ${job.phone}\n` +
-      `Job type: ${job.jobType}\n` +
+      `Property type: ${job.placeType}\n` +
       `Site address: ${job.address}\n` +
-      `Approx. size (sq mtrs): ${job.size}\n` +
+      `Area size: ${job.areaSize || 'Not specified'} sq mtrs\n` +
+      `Depth of pour: ${job.depth || 'Not specified'} mm\n` +
+      `Concrete volume: ${job.cubicMeters || 'Not specified'} m³\n` +
       `Preferred date: ${job.preferredDate}\n` +
       `Notes: ${job.notes || 'None'}\n`
   };
@@ -60,9 +62,9 @@ function sendJobEmail(job) {
 // --- Routes ---
 
 app.post('/api/jobs', async (req, res) => {
-  const { name, phone, jobType, address, size, preferredDate, notes } = req.body;
+  const { name, phone, placeType, address, areaSize, depth, cubicMeters, preferredDate, notes } = req.body;
 
-  if (!name || !phone || !jobType || !address || !preferredDate) {
+  if (!name || !phone || !placeType || !address || !preferredDate) {
     return res.status(400).json({ error: 'Missing required fields.' });
   }
 
@@ -70,9 +72,11 @@ app.post('/api/jobs', async (req, res) => {
     id: Date.now().toString(),
     name,
     phone,
-    jobType,
+    placeType,
     address,
-    size: size || '',
+    areaSize: areaSize || '',
+    depth: depth || '',
+    cubicMeters: cubicMeters || '',
     preferredDate,
     notes: notes || '',
     status: 'new',

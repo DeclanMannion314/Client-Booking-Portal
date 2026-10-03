@@ -17,7 +17,6 @@ h1 {
   color: #1a2332;
 }
 
-/* Booking form page */
 p.subtitle {
   color: #555;
   margin-top: 0;
@@ -34,11 +33,20 @@ label {
 
 input, select, textarea {
   width: 100%;
+  max-width: 100%;
   padding: 10px;
   margin-top: 4px;
   font-size: 1rem;
   border: 1px solid #ccc;
   border-radius: 6px;
+}
+
+input[type="date"] {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  -webkit-appearance: none;
+  appearance: none;
 }
 
 input:focus, select:focus, textarea:focus {
@@ -73,7 +81,171 @@ form button {
   font-weight: bold;
 }
 
-/* Dashboard */
+.site-header {
+  position: relative;
+  text-align: center;
+  padding: 20px 0 16px;
+  border-bottom: 3px solid #e8952f;
+  margin-bottom: 24px;
+}
+
+.site-logo {
+  max-width: 270px;
+  width: 80%;
+  height: auto;
+}
+
+.back-arrow {
+  position: absolute;
+  left: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #1a2332;
+  text-decoration: none;
+  padding: 4px 10px;
+  line-height: 1;
+}
+
+.back-arrow:hover {
+  color: #e8952f;
+}
+
+.landing-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  max-width: 400px;
+}
+
+.landing-logo-wrap {
+  margin-bottom: 40px;
+}
+
+.landing-logo {
+  max-width: 260px;
+  width: 100%;
+  height: auto;
+}
+
+.landing-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+}
+
+.landing-btn {
+  display: block;
+  text-align: center;
+  padding: 16px;
+  border-radius: 8px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  text-decoration: none;
+  font-size: 0.95rem;
+}
+
+.landing-btn-primary {
+  background: #e8952f;
+  color: white;
+}
+
+.landing-btn-primary:hover {
+  background: #d1801f;
+}
+
+.landing-btn-secondary {
+  background: #1a2332;
+  color: white;
+}
+
+.landing-btn-secondary:hover {
+  background: #0f1620;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: normal;
+  font-size: 0.85rem;
+  margin-top: 16px;
+}
+
+.checkbox-label input[type="checkbox"] {
+  width: auto;
+  margin: 0;
+}
+
+.volume-toggle-row {
+  margin-top: 4px;
+}
+
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.popup-box {
+  background: white;
+  border-radius: 10px;
+  padding: 28px 24px;
+  max-width: 340px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.popup-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 12px;
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: white;
+}
+
+.popup-success {
+  background: #1a8a3d;
+}
+
+.popup-error {
+  background: #b83232;
+}
+
+.popup-box h2 {
+  font-size: 1.1rem;
+  margin: 0 0 8px;
+  color: #1a2332;
+}
+
+.popup-box p {
+  font-size: 0.9rem;
+  color: #555;
+  margin: 0 0 16px;
+}
+
+.popup-box button {
+  width: 100%;
+}
+
 #loginBox {
   margin: 80px auto;
   text-align: center;
@@ -108,7 +280,6 @@ form button {
   margin-top: 20px;
 }
 
-/* Job cards */
 .job-card {
   border: 1px solid #ddd;
   border-radius: 8px;
@@ -180,6 +351,7 @@ form button {
 .control-group input {
   padding: 8px;
   font-size: 0.85rem;
+  touch-action: manipulation;
 }
 
 .status-new { color: #b8860b; }
@@ -187,7 +359,6 @@ form button {
 .status-scheduled { color: #7a1ab8; }
 .status-done { color: #1a8a3d; }
 
-/* Calendar */
 .calendar-header {
   display: flex;
   align-items: center;
@@ -259,79 +430,4 @@ form button {
   font-size: 1rem;
   border-top: 1px solid #ddd;
   padding-top: 16px;
-}
-
-
-.popup-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  padding: 20px;
-}
-
-.popup-box {
-  background: white;
-  border-radius: 10px;
-  padding: 28px 24px;
-  max-width: 340px;
-  width: 100%;
-  text-align: center;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-}
-
-.popup-icon {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto 12px;
-  font-size: 1.4rem;
-  font-weight: bold;
-  color: white;
-}
-
-.popup-success {
-  background: #1a8a3d;
-}
-
-.popup-error {
-  background: #b83232;
-}
-
-.popup-box h2 {
-  font-size: 1.1rem;
-  margin: 0 0 8px;
-  color: #1a2332;
-}
-
-.popup-box p {
-  font-size: 0.9rem;
-  color: #555;
-  margin: 0 0 16px;
-}
-
-.popup-box button {
-  width: 100%;
-}
-
-
-.site-header {
-  text-align: center;
-  padding: 12px 0 8px;
-  border-bottom: 3px solid #e8952f;
-  margin-bottom: 20px;
-}
-
-.site-logo {
-  max-width: 220px;
-  width: 100%;
-  height: auto;
 }

@@ -9,6 +9,7 @@
 <body class="dashboard-page">
 
 <div class="site-header">
+  <a href="index.html" class="back-arrow" aria-label="Back">&larr;</a>
   <img src="logo.png" alt="GG Pumped Floorscreed" class="site-logo">
 </div>
 
@@ -96,13 +97,15 @@ function jobCardHtml(job) {
   return `
     <div class="job-card">
       <div class="job-card-top">
-        <span class="job-type-badge">${job.jobType}</span>
+        <span class="job-type-badge">${job.placeType}</span>
         <button class="delete-btn" onclick="deleteJob('${job.id}')">Delete</button>
       </div>
       <div class="job-name">${job.name}</div>
       <div class="job-detail"><strong>Phone:</strong> ${job.phone}</div>
       <div class="job-detail"><strong>Address:</strong> ${job.address}</div>
-      ${job.size ? `<div class="job-detail"><strong>Size:</strong> ${job.size} sq mtrs</div>` : ''}
+      ${job.areaSize ? `<div class="job-detail"><strong>Area:</strong> ${job.areaSize} sq mtrs</div>` : ''}
+      ${job.depth ? `<div class="job-detail"><strong>Depth:</strong> ${job.depth} mm</div>` : ''}
+      ${job.cubicMeters ? `<div class="job-detail"><strong>Volume:</strong> ${job.cubicMeters} m³</div>` : ''}
       <div class="job-detail"><strong>Preferred date:</strong> ${job.preferredDate}</div>
       ${job.notes ? `<div class="job-detail"><strong>Notes:</strong> ${job.notes}</div>` : ''}
 
@@ -118,7 +121,7 @@ function jobCardHtml(job) {
         </div>
         <div class="control-group">
           <label>Scheduled date</label>
-          <input type="date" value="${job.scheduledDate || ''}" onchange="updateJob('${job.id}', { scheduledDate: this.value })">
+          <input type="date" ${job.scheduledDate ? `value="${job.scheduledDate}"` : ''} onchange="updateJob('${job.id}', { scheduledDate: this.value })">
         </div>
       </div>
     </div>
